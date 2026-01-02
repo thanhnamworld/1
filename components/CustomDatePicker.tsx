@@ -3,14 +3,21 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 
 interface CustomDatePickerProps {
-  selectedDate: string; // ISO format or YYYY-MM-DD
+  selectedDate: string; // Định dạng dd-mm-yyyy
   onSelect: (date: string) => void;
   onClose: () => void;
 }
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onSelect, onClose }) => {
-  const [viewDate, setViewDate] = useState(selectedDate ? new Date(selectedDate) : new Date());
-  const selected = selectedDate ? new Date(selectedDate) : null;
+  // Chuyển đổi từ dd-mm-yyyy sang Date object để hiển thị view
+  const parseDate = (dateStr: string) => {
+    if (!dateStr) return new Date();
+    const [d, m, y] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
+  const [viewDate, setViewDate] = useState(parseDate(selectedDate));
+  const selected = selectedDate ? parseDate(selectedDate) : null;
 
   const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const startDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
@@ -25,8 +32,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onSel
   const handleNextMonth = () => setViewDate(new Date(year, month + 1, 1));
 
   const handleSelectDay = (day: number) => {
-    const newDate = new Date(year, month, day);
-    onSelect(newDate.toISOString().split('T')[0]);
+    const d = String(day).padStart(2, '0');
+    const m = String(month + 1).padStart(2, '0');
+    const y = year;
+    onSelect(`${d}-${m}-${y}`); // Trả về định dạng dd-mm-yyyy
     onClose();
   };
 
@@ -54,8 +63,8 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onSel
         type="button"
         onClick={() => handleSelectDay(d)}
         className={`h-9 w-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all relative
-          ${isSelected(d) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'hover:bg-indigo-50 text-slate-700'}
-          ${isToday(d) && !isSelected(d) ? 'text-indigo-600 ring-1 ring-indigo-200' : ''}
+          ${isSelected(d) ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'hover:bg-emerald-50 text-slate-700'}
+          ${isToday(d) && !isSelected(d) ? 'text-emerald-600 ring-1 ring-emerald-200' : ''}
         `}
       >
         {d}
@@ -93,10 +102,13 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selectedDate, onSel
         type="button"
         onClick={() => {
           const today = new Date();
-          onSelect(today.toISOString().split('T')[0]);
+          const d = String(today.getDate()).padStart(2, '0');
+          const m = String(today.getMonth() + 1).padStart(2, '0');
+          const y = today.getFullYear();
+          onSelect(`${d}-${m}-${y}`);
           onClose();
         }}
-        className="w-full mt-4 py-2.5 text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50/50 hover:bg-indigo-50 rounded-xl transition-all"
+        className="w-full mt-4 py-2.5 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50/50 hover:bg-emerald-50 rounded-xl transition-all"
       >
         CHỌN HÔM NAY
       </button>

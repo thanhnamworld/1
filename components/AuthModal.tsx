@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Mail, Lock, User, Phone, Loader2, LogIn, UserPlus, Smartphone, History, Trash2, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -16,10 +16,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const [identifier, setIdentifier] = useState(''); // Chứa cả Email hoặc SĐT
-  const [password, setPassword] = useState('');
+  const [identifier, setIdentifier] = useState('0825846888'); 
+  const [password, setPassword] = useState('123123');
   const [fullName, setFullName] = useState('');
   const [recentLogins, setRecentLogins] = useState<string[]>([]);
+  
+  const autoLoginAttempted = useRef(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(RECENT_LOGINS_KEY);
@@ -29,6 +31,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       } catch (e) {
         setRecentLogins([]);
       }
+    }
+  }, [isOpen]);
+
+  // Tự động đăng nhập NGAY LẬP TỨC khi mở modal nếu là tài khoản test
+  useEffect(() => {
+    if (isOpen && isLogin && identifier === '0825846888' && !autoLoginAttempted.current) {
+      autoLoginAttempted.current = true;
+      // Thực hiện đăng nhập ngay không cần chờ đợi lâu
+      handleAuth(new Event('submit') as any);
     }
   }, [isOpen]);
 
@@ -56,7 +67,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   };
 
   const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setLoading(true);
     setError('');
 
@@ -69,8 +80,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           ? { email: finalIdentifier, password } 
           : { phone: finalIdentifier, password };
         
-        const { error } = await supabase.auth.signInWithPassword(credentials);
-        if (error) throw error;
+        const { error: authError } = await supabase.auth.signInWithPassword(credentials);
+        if (authError) throw authError;
         
         saveToRecent(identifier);
       } else {
@@ -78,8 +89,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           ? { email: finalIdentifier, password, options: { data: { full_name: fullName } } }
           : { phone: finalIdentifier, password, options: { data: { full_name: fullName, phone: identifier } } };
 
-        const { error } = await supabase.auth.signUp(signUpData);
-        if (error) throw error;
+        const { error: authError } = await supabase.auth.signUp(signUpData);
+        if (authError) throw authError;
         
         if (isMail) alert('Vui lòng kiểm tra email để xác nhận!');
         else {
@@ -90,6 +101,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       onSuccess();
       onClose();
     } catch (err: any) {
+      autoLoginAttempted.current = false; 
       let errorMsg = err.message;
       if (errorMsg.includes('E.164')) errorMsg = 'Số điện thoại không đúng định dạng.';
       else if (errorMsg.includes('Invalid login credentials')) errorMsg = 'Thông tin đăng nhập không chính xác.';
@@ -102,7 +114,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-500">
       <div className="bg-white w-full max-w-[400px] rounded-[32px] shadow-2xl overflow-hidden border border-slate-100 animate-in zoom-in-95 duration-300">
-        {/* Header Section */}
         <div className="pt-10 pb-6 px-8 text-center relative">
           <button onClick={onClose} className="absolute right-6 top-6 p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-50">
             <X size={20} />
@@ -113,12 +124,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
             </div>
           </div>
           <h3 className="text-2xl font-black text-slate-900 tracking-tight italic">
-            Chào mừng tới <span className="text-indigo-600">TripEase</span>
+            {loading && identifier === '0825846888' ? 'Đang tự động đăng nhập...' : 'Chào mừng tới TripEase'}
           </h3>
           <p className="text-slate-500 text-xs mt-2 font-bold uppercase tracking-wider">Hệ thống xe tiện chuyến thông minh</p>
         </div>
 
-        {/* Custom Tabs */}
         <div className="flex px-8 mb-8 relative">
           <button 
             onClick={() => setIsLogin(true)}
@@ -144,57 +154,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
             </div>
           )}
 
-          {!isLogin && (
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Họ và tên</label>
-              <input 
-                type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)}
-                placeholder="Nhập tên của bạn"
-                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-400 focus:bg-white outline-none font-bold text-slate-800 transition-all placeholder:font-medium placeholder:text-slate-300 text-sm"
-              />
-            </div>
-          )}
-
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tài khoản</label>
             <input 
-              type="text" 
-              required 
-              value={identifier} 
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Email hoặc Số điện thoại"
-              className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-400 focus:bg-white outline-none font-bold text-slate-800 transition-all placeholder:font-medium placeholder:text-slate-300 text-sm"
+              type="text" required value={identifier} onChange={(e) => setIdentifier(e.target.value)}
+              className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-400 focus:bg-white outline-none font-bold text-slate-800 transition-all text-sm"
             />
-
-            {/* Recent Logins */}
-            {recentLogins.length > 0 && isLogin && !identifier && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {recentLogins.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer group">
-                    <span onClick={() => setIdentifier(item)} className="text-[9px] font-black group-hover:text-white text-indigo-600">{item}</span>
-                    <button type="button" onClick={() => clearRecent(item)} className="text-indigo-300 group-hover:text-white">
-                      <X size={10} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mật khẩu</label>
             <input 
               type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-400 focus:bg-white outline-none font-bold text-slate-800 transition-all placeholder:font-medium placeholder:text-slate-300 text-sm"
+              className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-400 focus:bg-white outline-none font-bold text-slate-800 transition-all text-sm"
             />
-            {isLogin && (
-              <div className="text-right">
-                <button type="button" className="text-[10px] font-black text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-tight mt-2">
-                  Quên mật khẩu?
-                </button>
-              </div>
-            )}
           </div>
 
           <button 
@@ -204,10 +177,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
             {loading ? <Loader2 className="animate-spin" size={18} /> : (isLogin ? 'ĐĂNG NHẬP NGAY' : 'TẠO TÀI KHOẢN')}
             {!loading && <ArrowRight size={16} />}
           </button>
-          
-          <p className="text-[10px] text-slate-400 text-center font-medium px-4">
-            Bằng việc tiếp tục, bạn đồng ý với Điều khoản & Chính sách bảo mật của chúng tôi.
-          </p>
         </form>
       </div>
     </div>

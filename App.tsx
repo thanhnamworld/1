@@ -108,6 +108,65 @@ const App: React.FC = () => {
     setNotifications(prev => [newNotif, ...prev]);
   };
 
+  // Logic tự động cập nhật trạng thái dựa trên thời gian thực
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      let hasChanges = false;
+
+      trips.forEach(async (trip) => {
+        const departure = new Date(trip.departure_time);
+        // Giả định chuyến đi mất 3 tiếng
+        const completionTime = new Date(departure.getTime() + 3 * 60 * 60 * 1000);
+
+        // 1. CHUẨN BỊ/FULL -> ĐANG ĐI (Khi đến giờ)
+        if ((trip.status === TripStatus.PREPARING || trip.status === TripStatus.FULL) && now >= departure && now < completionTime) {
+          hasChanges = true;
+          await supabase.from('trips').update({ status: TripStatus.ON_TRIP }).eq('id', trip.id);
+        }
+        // 2. ĐANG ĐI -> HOÀN THÀNH (Sau 3 tiếng)
+        else if (trip.status === TripStatus.ON_TRIP && now >= completionTime) {
+          hasChanges = true;
+          await supabase.from('trips').update({ status: TripStatus.COMPLETED }).eq('id', trip.id);
+        }
+      });
+
+      if (hasChanges) fetchTrips();
+    }, 60000); // Kiểm tra mỗi phút
+
+    return () => clearInterval(interval);
+  }, [trips, fetchTrips]);
+
+  const handlePostTrip = async (tripsToPost: any[]) => {
+    if (!user) return;
+    
+    try {
+      const formattedTrips = tripsToPost.map(t => ({
+        driver_id: user.id,
+        origin_name: t.origin.name,
+        origin_desc: t.origin.description,
+        dest_name: t.destination.name,
+        dest_desc: t.destination.description,
+        departure_time: t.departureTime,
+        price: t.price,
+        seats: t.seats,
+        available_seats: t.availableSeats,
+        vehicle_info: t.vehicleInfo,
+        status: TripStatus.PREPARING
+      }));
+
+      const { error } = await supabase.from('trips').insert(formattedTrips);
+      
+      if (error) throw error;
+
+      addNotification('Thành công', `Đã đăng ${formattedTrips.length} chuyến xe mới!`, 'success');
+      refreshAllData();
+      setActiveTab('manage-trips');
+    } catch (err: any) {
+      alert('Lỗi khi đăng chuyến: ' + err.message);
+    }
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -187,6 +246,12 @@ const App: React.FC = () => {
     if (bookingError) {
       alert('Lỗi đặt chỗ: ' + bookingError.message);
     } else {
+      // Tự động chuyển trạng thái chuyến xe sang FULL nếu hết ghế
+      const newAvailable = latestTrip.available_seats - data.seats;
+      if (newAvailable === 0) {
+        await supabase.from('trips').update({ status: TripStatus.FULL }).eq('id', selectedTrip.id);
+      }
+
       const bCode = `#ORD-${newBooking.id.substring(0, 5).toUpperCase()}`;
       addNotification('Thành công', `Đặt chỗ thành công! Mã đơn: ${bCode}`, 'success');
       setIsBookingModalOpen(false);
@@ -201,7 +266,7 @@ const App: React.FC = () => {
     switch (activeTab) {
       case 'dashboard': return isStaff ? <Dashboard bookings={staffBookings} trips={trips} /> : <SearchTrips trips={trips} onBook={handleOpenBookingModal} />;
       case 'search': return <SearchTrips trips={trips} onBook={handleOpenBookingModal} />;
-      case 'post': return <PostTrip onPost={() => refreshAllData()} />;
+      case 'post': return <PostTrip onPost={handlePostTrip} />;
       case 'bookings': return <BookingsList bookings={bookings} trips={trips} onRefresh={refreshAllData} />;
       case 'manage-trips': return <TripManagement profile={profile} trips={trips} bookings={staffBookings} onRefresh={fetchTrips} />;
       case 'manage-orders': return <OrderManagement profile={profile} trips={trips} onRefresh={refreshAllData} />;

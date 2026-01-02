@@ -55,14 +55,24 @@ const TripManagement: React.FC<TripManagementProps> = ({ profile, trips, booking
   }, [trips, searchTerm, statusFilter, sortConfig, isAdmin, profile]);
 
   const getStatusConfig = (trip: Trip) => {
-    if (trip.available_seats <= 0 && trip.status === TripStatus.PREPARING) {
-      return { text: 'FULL GHẾ', style: 'bg-rose-50 text-rose-600 border-rose-100', dot: 'bg-rose-500' };
+    // Ưu tiên kiểm tra số ghế nếu trạng thái đang là chuẩn bị
+    if (trip.available_seats <= 0 && (trip.status === TripStatus.PREPARING || trip.status === TripStatus.FULL)) {
+      return { text: 'HẾT CHỖ', style: 'bg-rose-50 text-rose-600 border-rose-100', dot: 'bg-rose-500' };
     }
+
     switch (trip.status) {
-      case TripStatus.PREPARING: return { text: 'CHUẨN BỊ', style: 'bg-indigo-50 text-indigo-600 border-indigo-100', dot: 'bg-indigo-500' };
-      case TripStatus.ON_TRIP: return { text: 'ĐANG ĐI', style: 'bg-amber-50 text-amber-600 border-amber-100', dot: 'bg-amber-500' };
-      case TripStatus.COMPLETED: return { text: 'HOÀN THÀNH', style: 'bg-emerald-50 text-emerald-600 border-emerald-100', dot: 'bg-emerald-500' };
-      default: return { text: 'ĐÃ HỦY', style: 'bg-slate-50 text-slate-500 border-slate-200', dot: 'bg-slate-400' };
+      case TripStatus.FULL:
+        return { text: 'HẾT CHỖ', style: 'bg-rose-50 text-rose-600 border-rose-100', dot: 'bg-rose-500' };
+      case TripStatus.PREPARING: 
+        return { text: 'CHUẨN BỊ', style: 'bg-indigo-50 text-indigo-600 border-indigo-100', dot: 'bg-indigo-500' };
+      case TripStatus.ON_TRIP: 
+        return { text: 'ĐANG ĐI', style: 'bg-amber-50 text-amber-600 border-amber-100', dot: 'bg-amber-500' };
+      case TripStatus.COMPLETED: 
+        return { text: 'HOÀN THÀNH', style: 'bg-emerald-50 text-emerald-600 border-emerald-100', dot: 'bg-emerald-500' };
+      case TripStatus.CANCELLED:
+        return { text: 'ĐÃ HỦY', style: 'bg-slate-50 text-slate-500 border-slate-200', dot: 'bg-slate-400' };
+      default: 
+        return { text: 'ĐÃ HỦY', style: 'bg-slate-50 text-slate-500 border-slate-200', dot: 'bg-slate-400' };
     }
   };
 
@@ -100,7 +110,7 @@ const TripManagement: React.FC<TripManagementProps> = ({ profile, trips, booking
         </div>
         <UnifiedDropdown 
           label="Trạng thái" icon={ClipboardList} value={statusFilter} onChange={setStatusFilter}
-          options={[{label:'Tất cả', value:'ALL'}, {label:'Chuẩn bị', value:TripStatus.PREPARING}, {label:'Đang đi', value:TripStatus.ON_TRIP}, {label:'Hoàn thành', value:TripStatus.COMPLETED}]}
+          options={[{label:'Tất cả', value:'ALL'}, {label:'Chuẩn bị', value:TripStatus.PREPARING}, {label:'Đang đi', value:TripStatus.ON_TRIP}, {label:'Hoàn thành', value:TripStatus.COMPLETED}, {label:'Hết chỗ', value:TripStatus.FULL}]}
         />
       </div>
 
@@ -159,7 +169,7 @@ const TripManagement: React.FC<TripManagementProps> = ({ profile, trips, booking
                     <div className="flex items-center justify-end gap-2">
                       {actionLoading === trip.id ? <Loader2 className="animate-spin text-indigo-600" size={14} /> : (
                         <>
-                          {trip.status === TripStatus.PREPARING && (
+                          {(trip.status === TripStatus.PREPARING || trip.status === TripStatus.FULL) && (
                             <>
                               <button onClick={() => handleUpdateStatus(trip.id, TripStatus.ON_TRIP)} className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100" title="Bắt đầu đi"><Play size={14} /></button>
                               <button onClick={() => handleUpdateStatus(trip.id, TripStatus.CANCELLED)} className="p-1.5 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-600 hover:text-white transition-all border border-rose-100" title="Hủy chuyến"><XCircle size={14} /></button>

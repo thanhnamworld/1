@@ -6,11 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chung đường - Xe Tiện Chuyến Thông Minh</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { 
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Inter', sans-serif;
           background-color: #f8fafc;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          letter-spacing: -0.01em;
+        }
+        h1, h2, h3, h4, .font-outfit {
+          font-family: 'Outfit', sans-serif;
         }
         .glass {
           background: rgba(255, 255, 255, 0.7);
@@ -36,21 +44,94 @@
           animation: slideInUp 0.4s ease-out forwards;
         }
         
-        /* Road Animation Styles */
+        /* --- ROAD ANIMATION V2 --- */
         @keyframes carDrive {
-          0% { left: -10%; }
-          100% { left: 110%; }
+          0% { left: -15%; }
+          100% { left: 115%; }
         }
-        .road-line {
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #10b981, transparent);
+
+        @keyframes carVibration {
+          0%, 100% { transform: translateY(0) rotate(0); }
+          25% { transform: translateY(-1px) rotate(0.5deg); }
+          75% { transform: translateY(0.5px) rotate(-0.5deg); }
+        }
+
+        @keyframes carColorCycle {
+          0%, 100% { background-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); } /* Emerald */
+          15% { background-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); } /* Blue */
+          30% { background-color: #6366f1; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); } /* Indigo */
+          45% { background-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); } /* Purple */
+          60% { background-color: #ec4899; box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); } /* Pink */
+          75% { background-color: #f43f5e; box-shadow: 0 0 15px rgba(244, 63, 94, 0.4); } /* Rose */
+          90% { background-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); } /* Amber */
+        }
+
+        @keyframes roadFlow {
+          from { background-position: 0 0; }
+          to { background-position: 40px 0; }
+        }
+
+        .road-container {
           position: relative;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          background: #f1f5f9;
+          border-radius: 16px;
+          padding: 0 12px;
           overflow: hidden;
         }
-        .animated-car {
+
+        .road-line-v2 {
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-image: linear-gradient(to right, #cbd5e1 50%, transparent 50%);
+          background-size: 15px 100%;
+          opacity: 0.3;
+          animation: roadFlow 1s linear infinite reverse;
+        }
+
+        .animated-car-v2 {
           position: absolute;
           animation: carDrive 8s linear infinite;
-          top: -10px;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+        }
+
+        .car-body {
+          padding: 5px;
+          border-radius: 10px;
+          color: white;
+          animation: carColorCycle 8s linear infinite, carVibration 0.3s linear infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1.5px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .car-trail {
+          width: 24px;
+          height: 2px;
+          background: linear-gradient(to right, transparent, rgba(148, 163, 184, 0.2));
+          border-radius: 2px;
+          margin-left: -2px;
+        }
+
+        .day-dot {
+          width: 4px;
+          height: 4px;
+          border-radius: 2px;
+          background: #e2e8f0;
+          transition: all 0.3s ease;
+        }
+        
+        .day-container:hover .day-dot {
+          background: #10b981;
+          transform: scale(1.5);
+          box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
         }
     </style>
 <script type="importmap">

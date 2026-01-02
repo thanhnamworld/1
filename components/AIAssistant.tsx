@@ -1,12 +1,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, Loader2 } from 'lucide-react';
 import { chatWithAssistant } from '../services/geminiService';
 
 const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', text: string}[]>([
-    { role: 'assistant', text: 'Chào bạn! Tôi là trợ lý của Chung đường. Hiện tại tính năng Chat AI đang được nâng cấp để phục vụ bạn tốt hơn. Bạn có cần hỗ trợ gì về các chuyến xe hiện có không?' }
+    { role: 'assistant', text: 'Chào bạn! Tôi là trợ lý AI của Chung đường. Tôi có thể giúp gì cho bạn về giá cả hoặc lộ trình hôm nay?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,13 +26,10 @@ const AIAssistant = () => {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
 
-    // Gọi hàm service (hiện đã trả về phản hồi tĩnh)
-    const response = await chatWithAssistant(userMsg, "");
+    const response = await chatWithAssistant(userMsg, "Ứng dụng Chung đường: Đặt xe tiện chuyến, giá rẻ hơn 30-50% so với taxi truyền thống.");
     
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'assistant', text: response }]);
-      setLoading(false);
-    }, 500);
+    setMessages(prev => [...prev, { role: 'assistant', text: response }]);
+    setLoading(false);
   };
 
   return (
@@ -45,10 +42,10 @@ const AIAssistant = () => {
                 <Sparkles size={20} />
               </div>
               <div>
-                <h4 className="font-bold">Hỗ trợ Chung đường</h4>
+                <h4 className="font-bold">Chung đường AI</h4>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                  <span className="text-[10px] text-emerald-100 font-medium uppercase tracking-wider">Chế độ ổn định</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="text-[10px] text-emerald-100 font-medium uppercase tracking-wider">Đang trực tuyến</span>
                 </div>
               </div>
             </div>
@@ -58,11 +55,6 @@ const AIAssistant = () => {
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
-            <div className="bg-amber-50 border border-amber-100 p-3 rounded-xl flex items-start gap-2 mb-2">
-              <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-amber-700 font-medium">Tính năng AI đang được bảo trì. Bạn vẫn có thể gửi tin nhắn, chúng tôi sẽ phản hồi bằng các thông tin có sẵn.</p>
-            </div>
-            
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
@@ -90,7 +82,7 @@ const AIAssistant = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Nhập yêu cầu hỗ trợ..."
+                placeholder="Nhập tin nhắn..."
                 className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
               />
               <button 
@@ -108,6 +100,7 @@ const AIAssistant = () => {
           onClick={() => setIsOpen(true)}
           className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all active:scale-95 group relative"
         >
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full animate-bounce"></div>
           <MessageSquare className="group-hover:rotate-12 transition-transform" />
         </button>
       )}
