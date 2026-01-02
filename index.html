@@ -3,8 +3,16 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Chung đường - Xe Tiện Chuyến Thông Minh</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Chung đường">
+    <link rel="manifest" href="manifest.json">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +24,9 @@
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           letter-spacing: -0.01em;
+          /* Tối ưu cho PWA trên iOS */
+          padding-top: env(safe-area-inset-top);
+          padding-bottom: env(safe-area-inset-bottom);
         }
         h1, h2, h3, h4, .font-outfit {
           font-family: 'Outfit', sans-serif;
@@ -37,92 +48,110 @@
           border-radius: 10px;
         }
         
-        /* --- ROAD ANIMATION V3: U-TURN & DYNAMIC COLOR --- */
-        @keyframes carDriveV3 {
+        /* --- ROAD ANIMATION V4: U-TURN REALISM & DYNAMIC COLORS --- */
+        @keyframes carDriveV4 {
           0% { left: -10%; transform: translateY(-50%) scaleX(1); }
-          42% { left: 105%; transform: translateY(-50%) scaleX(1); }
-          46% { left: 105%; transform: translateY(-50%) scaleX(-1) rotate(-8deg); } /* Quay đầu phải */
-          50% { left: 105%; transform: translateY(-50%) scaleX(-1); }
+          /* Chặng đi */
+          40% { left: 95%; transform: translateY(-50%) scaleX(1); }
+          /* Pha quay đầu 1: Khựng lại và nghiêng */
+          44% { left: 105%; transform: translateY(-50%) scaleX(1) rotate(-10deg); }
+          /* Pha quay đầu 2: Xoay 180 độ (U-turn) */
+          48% { left: 105%; transform: translateY(-50%) scaleX(-1) rotate(0deg); }
+          52% { left: 105%; transform: translateY(-50%) scaleX(-1); }
+          /* Chặng về */
           92% { left: -5%; transform: translateY(-50%) scaleX(-1); }
-          96% { left: -5%; transform: translateY(-50%) scaleX(1) rotate(8deg); } /* Quay đầu trái */
-          100% { left: -10%; transform: translateY(-50%) scaleX(1); }
+          /* Pha quay đầu về */
+          96% { left: -10%; transform: translateY(-50%) scaleX(-1) rotate(10deg); }
+          100% { left: -10%; transform: translateY(-50%) scaleX(1) rotate(0deg); }
         }
 
-        @keyframes carVibrationV3 {
+        @keyframes carVibrationV4 {
           0%, 100% { margin-top: 0px; }
-          50% { margin-top: -1.5px; }
+          50% { margin-top: -2px; }
         }
 
-        @keyframes carColorCycleV3 {
-          0%, 100% { background-color: #10b981; color: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); } /* T2 */
-          14% { background-color: #3b82f6; color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); } /* T3 */
-          28% { background-color: #6366f1; color: #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); } /* T4 */
-          42% { background-color: #a855f7; color: #a855f7; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); } /* T5 */
-          56% { background-color: #ec4899; color: #ec4899; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4); } /* T6 */
-          70% { background-color: #f43f5e; color: #f43f5e; box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4); } /* T7 */
-          84% { background-color: #f59e0b; color: #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); } /* CN */
+        @keyframes carColorCycleV4 {
+          0%, 100% { background-color: #10b981; color: #10b981; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5); }
+          25% { background-color: #3b82f6; color: #3b82f6; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5); }
+          50% { background-color: #6366f1; color: #6366f1; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5); }
+          75% { background-color: #f59e0b; color: #f59e0b; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5); }
         }
 
-        @keyframes roadFlowV3 {
+        @keyframes roadFlowV4 {
           0% { background-position: 0 0; }
-          42% { background-position: -120px 0; }
-          50% { background-position: -120px 0; }
-          92% { background-position: 120px 0; }
+          48% { background-position: -150px 0; }
+          52% { background-position: -150px 0; }
           100% { background-position: 0 0; }
         }
 
         .road-container {
           position: relative;
-          height: 38px;
+          height: 40px;
           display: flex;
           align-items: center;
           background: #f1f5f9;
-          border-radius: 19px;
-          padding: 0 16px;
+          border-radius: 20px;
+          padding: 0 20px;
           overflow: hidden;
           border: 1px solid #e2e8f0;
         }
 
-        .road-line-v3 {
+        .road-line-v4 {
           position: absolute;
           left: 0;
           right: 0;
-          height: 1.5px;
+          height: 2px;
           background-image: linear-gradient(to right, #cbd5e1 40%, transparent 40%);
-          background-size: 20px 100%;
-          opacity: 0.4;
-          animation: roadFlowV3 12s linear infinite;
+          background-size: 24px 100%;
+          opacity: 0.5;
+          animation: roadFlowV4 12s linear infinite;
         }
 
-        .animated-car-v3 {
+        .animated-car-v4 {
           position: absolute;
-          animation: carDriveV3 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+          animation: carDriveV4 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
           top: 50%;
           z-index: 10;
           display: flex;
           align-items: center;
         }
 
-        .car-body-v3 {
-          padding: 6px;
-          border-radius: 10px;
+        .car-body-v4 {
+          padding: 7px;
+          border-radius: 12px;
           color: white !important;
-          animation: carColorCycleV3 12s linear infinite, carVibrationV3 0.25s ease-in-out infinite;
+          animation: carColorCycleV4 12s linear infinite, carVibrationV4 0.2s ease-in-out infinite;
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 1.5px solid rgba(255, 255, 255, 0.4);
+          border: 2px solid rgba(255, 255, 255, 0.5);
+          position: relative;
+        }
+        
+        /* Hiệu ứng hào quang nhỏ sau xe */
+        .car-body-v4::after {
+          content: '';
+          position: absolute;
+          right: 100%;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 20px;
+          height: 4px;
+          background: linear-gradient(to right, transparent, currentColor);
+          opacity: 0.4;
+          filter: blur(2px);
         }
 
         .day-dot {
-          width: 5px;
-          height: 5px;
+          width: 6px;
+          height: 6px;
           border-radius: 50%;
           background: #e2e8f0;
+          transition: all 0.3s ease;
         }
         
         .day-label {
-          font-size: 7px;
+          font-size: 8px;
           font-weight: 900;
           color: #94a3b8;
           text-transform: uppercase;
@@ -141,13 +170,20 @@
     }
     </script>
     <script>
-      // Đảm bảo biến môi trường giả lập không gây crash trên browser thuần
       window.process = { env: { API_KEY: "" } };
     </script>
 </head>
 <body class="selection:bg-emerald-100 selection:text-emerald-700">
     <div id="root"></div>
-    <!-- QUAN TRỌNG: Thêm script entry point bên dưới -->
     <script type="module" src="index.tsx"></script>
+    
+    <!-- Đăng ký Service Worker cơ bản cho PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+        });
+      }
+    </script>
 </body>
 </html>

@@ -21,22 +21,21 @@ const RoadAnimation = () => {
   return (
     <div className="hidden md:block flex-1 max-w-md mx-8">
       <div className="road-container">
-        <div className="road-line-v2"></div>
-        <div className="absolute inset-0 flex justify-between items-center px-4 z-0">
+        <div className="road-line-v4"></div>
+        <div className="absolute inset-0 flex justify-between items-center px-6 z-0">
           {days.map((day, i) => (
             <div key={i} className="day-container flex flex-col items-center gap-1 group cursor-default">
               <div className="day-dot"></div>
-              <span className="text-[7px] font-black text-slate-400 uppercase tracking-tighter group-hover:text-emerald-600 transition-colors">
+              <span className="day-label">
                 {day}
               </span>
             </div>
           ))}
         </div>
         
-        <div className="animated-car-v2 flex items-center">
-          <div className="car-trail"></div>
-          <div className="car-body">
-            <Car size={12} fill="currentColor" fillOpacity={0.2} />
+        <div className="animated-car-v4">
+          <div className="car-body-v4">
+            <Car size={14} fill="white" />
           </div>
         </div>
       </div>

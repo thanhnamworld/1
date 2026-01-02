@@ -1,0 +1,25 @@
+
+{
+  "short_name": "Chung đường",
+  "name": "Chung đường - Xe Tiện Chuyến",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3202/3202926.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3202/3202926.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#059669",
+  "description": "Quản lý xe tiện chuyến thông minh và tối ưu chi phí."
+}
