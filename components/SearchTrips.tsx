@@ -28,7 +28,7 @@ export const UnifiedDropdown = ({ label, icon: Icon, options, value, onChange, p
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2.5 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:border-indigo-400 transition-all shadow-sm ${isOpen ? 'ring-2 ring-indigo-100 border-indigo-400' : ''}`}
+        className={`flex items-center gap-2.5 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:border-emerald-400 transition-all shadow-sm ${isOpen ? 'ring-2 ring-emerald-100 border-emerald-400' : ''}`}
       >
         <Icon size={16} className="text-slate-400" />
         <span className="text-[11px] font-bold text-slate-700 whitespace-nowrap">
@@ -46,7 +46,7 @@ export const UnifiedDropdown = ({ label, icon: Icon, options, value, onChange, p
               placeholder={placeholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border-none rounded-xl text-[11px] font-medium outline-none focus:ring-1 focus:ring-indigo-100"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border-none rounded-xl text-[11px] font-medium outline-none focus:ring-1 focus:ring-emerald-100"
             />
           </div>
           <div className="max-h-60 overflow-y-auto custom-scrollbar">
@@ -57,7 +57,7 @@ export const UnifiedDropdown = ({ label, icon: Icon, options, value, onChange, p
                 className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-50 rounded-xl text-[11px] font-bold text-slate-600 transition-colors text-left group"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 border rounded flex items-center justify-center transition-all ${value === opt.value ? 'bg-indigo-600 border-indigo-600 shadow-sm' : 'border-slate-300 bg-white group-hover:border-indigo-300'}`}>
+                  <div className={`w-4 h-4 border rounded flex items-center justify-center transition-all ${value === opt.value ? 'bg-emerald-600 border-emerald-600 shadow-sm' : 'border-slate-300 bg-white group-hover:border-emerald-300'}`}>
                     {value === opt.value && <Check size={10} className="text-white" />}
                   </div>
                   {opt.label}
@@ -88,7 +88,7 @@ const TripCard: React.FC<{ trip: Trip; onBook: (id: string) => void }> = ({ trip
     <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
       <div className="flex justify-between items-start mb-6">
         <div className="flex gap-3 items-center">
-          <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-indigo-600 text-lg font-black border border-slate-100 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-emerald-600 text-lg font-black border border-slate-100 shadow-sm">
             {trip.driver_name?.charAt(0) || 'T'}
           </div>
           <div>
@@ -100,7 +100,7 @@ const TripCard: React.FC<{ trip: Trip; onBook: (id: string) => void }> = ({ trip
           </div>
         </div>
         <div className="text-right">
-          <p className="text-lg font-black text-indigo-600 tracking-tight">
+          <p className="text-lg font-black text-emerald-600 tracking-tight">
             {new Intl.NumberFormat('vi-VN').format(trip.price)}đ
           </p>
           <CopyableCode code={tripCode} className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter ml-auto" />
@@ -114,7 +114,7 @@ const TripCard: React.FC<{ trip: Trip; onBook: (id: string) => void }> = ({ trip
           <p className="font-bold text-slate-700 text-xs truncate">{trip.origin_name}</p>
         </div>
         <div className="flex items-center gap-4 relative z-10">
-          <div className="w-3.5 h-3.5 rounded-full border-2 border-indigo-500 bg-indigo-50"></div>
+          <div className="w-3.5 h-3.5 rounded-full border-2 border-emerald-500 bg-emerald-50"></div>
           <p className="font-bold text-slate-700 text-xs truncate">{trip.dest_name}</p>
         </div>
       </div>
@@ -122,7 +122,7 @@ const TripCard: React.FC<{ trip: Trip; onBook: (id: string) => void }> = ({ trip
       <div className="flex items-center justify-between pt-4 border-t border-slate-50">
         <div className="flex flex-col gap-0.5">
           <div className="text-[11px] font-black text-slate-800 flex items-center gap-1.5 uppercase tracking-wider">
-            <Clock size={12} className="text-indigo-500" /> {timeStr}
+            <Clock size={12} className="text-emerald-500" /> {timeStr}
           </div>
           <div className="text-[9px] font-bold text-slate-400 uppercase ml-4.5 tracking-tight">
              {dateStr}
@@ -142,7 +142,7 @@ const TripCard: React.FC<{ trip: Trip; onBook: (id: string) => void }> = ({ trip
         disabled={trip.available_seats <= 0}
         className={`w-full mt-4 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
           trip.available_seats > 0 
-          ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100 active:scale-[0.98]' 
+          ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xl shadow-emerald-100 active:scale-[0.98]' 
           : 'bg-slate-100 text-slate-400 cursor-not-allowed'
         }`}
       >
@@ -152,7 +152,6 @@ const TripCard: React.FC<{ trip: Trip; onBook: (id: string) => void }> = ({ trip
   );
 };
 
-// Fix for line 155: Define the missing SearchTripsProps interface
 interface SearchTripsProps {
   trips: Trip[];
   onBook: (id: string) => void;
@@ -176,27 +175,27 @@ const SearchTrips: React.FC<SearchTripsProps> = ({ trips, onBook }) => {
       <div className="bg-white/50 p-6 rounded-[32px] border border-slate-100 space-y-6">
         <div className="flex flex-col md:flex-row gap-4 items-center">
           <div className="relative flex-1 w-full group">
-            <SearchIcon className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
+            <SearchIcon className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors" size={18} />
             <input 
               type="text" 
-              placeholder="Search by route, driver, trip code..." 
+              placeholder="Tìm kiếm lộ trình, tài xế, mã chuyến..." 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-16 pr-6 py-3.5 bg-slate-100/50 border border-slate-200 focus:border-indigo-400 focus:bg-white rounded-xl outline-none transition-all font-bold text-slate-800 text-xs placeholder:text-slate-400" 
+              className="w-full pl-16 pr-6 py-3.5 bg-slate-100/50 border border-slate-200 focus:border-emerald-400 focus:bg-white rounded-xl outline-none transition-all font-bold text-slate-800 text-xs placeholder:text-slate-400" 
             />
           </div>
-          <button className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-[11px] font-black text-slate-500 hover:text-indigo-600 transition-all shadow-sm">
-             <User size={16} /> All Drivers <ChevronDown size={14} />
+          <button className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-[11px] font-black text-slate-500 hover:text-emerald-600 transition-all shadow-sm">
+             <User size={16} /> Tất cả tài xế <ChevronDown size={14} />
           </button>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <UnifiedDropdown 
-            label="All Locations" 
+            label="Mọi địa điểm" 
             icon={MapPin} 
             value="ALL"
             options={[
-              { label: 'All Locations', value: 'ALL' },
+              { label: 'Tất cả địa điểm', value: 'ALL' },
               { label: 'Hà Nội', value: 'HN' },
               { label: 'Nam Định', value: 'ND' },
               { label: 'Thái Bình', value: 'TB' }
@@ -204,11 +203,11 @@ const SearchTrips: React.FC<SearchTripsProps> = ({ trips, onBook }) => {
             onChange={() => {}}
           />
           <UnifiedDropdown 
-            label="All Due Dates" 
+            label="Ngày khởi hành" 
             icon={CalendarDays} 
             value="ALL"
             options={[
-              { label: 'All Due Dates', value: 'ALL' },
+              { label: 'Tất cả thời gian', value: 'ALL' },
               { label: 'Hôm nay', value: 'TODAY' },
               { label: 'Ngày mai', value: 'TOMORROW' },
               { label: 'Tuần này', value: 'WEEK' }
@@ -216,11 +215,11 @@ const SearchTrips: React.FC<SearchTripsProps> = ({ trips, onBook }) => {
             onChange={() => {}}
           />
           <UnifiedDropdown 
-            label="All Vehicles" 
+            label="Loại xe" 
             icon={Car} 
             value={vehicleFilter}
             options={[
-              { label: 'All Vehicles', value: 'ALL' },
+              { label: 'Tất cả loại xe', value: 'ALL' },
               { label: 'Sedan 4 chỗ', value: '4 chỗ' },
               { label: 'SUV 7 chỗ', value: '7 chỗ' },
               { label: 'Limousine', value: 'Limousine' }
@@ -228,7 +227,7 @@ const SearchTrips: React.FC<SearchTripsProps> = ({ trips, onBook }) => {
             onChange={setVehicleFilter}
           />
           <UnifiedDropdown 
-            label="Sort By" 
+            label="Sắp xếp theo" 
             icon={ArrowUpDown} 
             value={sortOrder}
             options={[
@@ -239,7 +238,7 @@ const SearchTrips: React.FC<SearchTripsProps> = ({ trips, onBook }) => {
             onChange={setSortOrder}
           />
           <div className="ml-auto">
-             <button className="p-2.5 text-slate-400 hover:text-indigo-600 transition-all">
+             <button className="p-2.5 text-slate-400 hover:text-emerald-600 transition-all">
                 <LayoutGrid size={20} />
              </button>
           </div>
